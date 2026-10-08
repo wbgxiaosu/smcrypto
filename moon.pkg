@@ -1,0 +1,4 @@
+import {
+  "wbgxiaosu/smcrypto/sm3",
+  "wbgxiaosu/smcrypto/sm4",
+}

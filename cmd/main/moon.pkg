@@ -1,0 +1,7 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "wbgxiaosu/smcrypto",
+  "wbgxiaosu/smcrypto/hexutil",
+}
+
+pkgtype(kind: "executable")
