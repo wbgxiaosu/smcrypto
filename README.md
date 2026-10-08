@@ -9,7 +9,9 @@ Chinese national cryptography (GM/T 国密) for MoonBit: SM3 hash and SM4 block 
 | 算法 | 标准 | 说明 |
 |------|------|------|
 | SM3 | GB/T 32905-2016 | 256 位密码杂凑（哈希）算法，流式 API 支持 |
-| SM4 | GB/T 32907-2016 | 128 位分组密码，ECB / CBC 工作模式，PKCS7 填充 |
+| SM4 | GB/T 32907-2016 | 128 位分组密码，ECB / CBC / CTR 工作模式，PKCS7 填充 |
+| HMAC-SM3 | RFC 2104 结构 | 基于 SM3 的消息认证码 |
+| SM3-KDF | GB/T 32918.3-2016 5.4.2 | SM2/SM9 密钥派生函数 |
 
 所有实现均已通过**国标附录标准测试向量**验证，并与独立的 Python `gmssl` 实现做了 51 条 SM3 向量、24 组 SM4 向量的**交叉对拍**（含 UTF-8 中文消息、填充边界长度 55/56/57/63/64/65 字节、随机分片流式输入）。
 
@@ -61,11 +63,14 @@ let ct1 : Bytes = c.encrypt_block(std_block)
 | `sm4_new(key : Bytes) -> Result[Sm4, Sm4Error]` | 创建 SM4 密码器（密钥必须 16 字节） |
 | `sm4_encrypt_ecb(key, pt) / sm4_decrypt_ecb(key, ct)` | ECB 模式（PKCS7） |
 | `sm4_encrypt_cbc(key, iv, pt) / sm4_decrypt_cbc(key, iv, ct)` | CBC 模式（PKCS7） |
+| `sm4_encrypt_ctr(key, ctr, pt) / sm4_decrypt_ctr(key, ctr, ct)` | CTR 模式（无填充，输出等长） |
+| `sm3_hmac(key, message) -> Bytes` | HMAC-SM3 消息认证码 |
+| `sm3_kdf(z : Bytes, klen : Int) -> Bytes` | SM3 密钥派生函数 |
 
 ### 子包
 
-- `sm3/`：`Sm3::new / update / finalize / reset`、`digest`、`hex_digest`
-- `sm4/`：`Sm4::new / encrypt_block / decrypt_block`、`encrypt_ecb / decrypt_ecb / encrypt_cbc / decrypt_cbc`、`Sm4Error`
+- `sm3/`：`Sm3::new / update / finalize / reset`、`digest`、`hex_digest`、`hmac`、`kdf`
+- `sm4/`：`Sm4::new / encrypt_block / decrypt_block`、`encrypt_ecb / decrypt_ecb / encrypt_cbc / decrypt_cbc / encrypt_ctr / decrypt_ctr`、`Sm4Error`
 - `hexutil/`：十六进制 `encode / decode`（供密钥、IV 与结果的可读化处理）
 
 ## 可复现验证
@@ -74,7 +79,7 @@ let ct1 : Bytes = c.encrypt_block(std_block)
 git clone https://github.com/wbgxiaosu/smcrypto
 cd smcrypto
 moon check   # 零警告
-moon test    # 14 组测试 / 51+24 条国标与交叉验证向量
+moon test    # 25 组测试 / 51+24 条国标与交叉验证向量
 moon run cmd/main   # 演示：国标向量对拍 + 中英文加解密 roundtrip
 ```
 
@@ -95,6 +100,7 @@ moon run cmd/main   # 演示：国标向量对拍 + 中英文加解密 roundtrip
 
 - **纯 MoonBit、零第三方依赖**：仅依赖 `moonbitlang/core`；`wasm-gc` / `js` / `native` 三后端均可构建。
 - **流式 API**：`Sm3` 支持任意长度分段 `update`，内部 64 字节缓冲自动处理填充边界。
+- **合成 T 表**：SM4 轮函数将 S 盒替换与线性变换合并为单次查表（8 张 256 项 32 位表），合并正确性先经 2 万随机字的数学等价验证再生成代码。
 - **健壮的错误类型**：`Sm4Error` / `HexError` 为代数数据类型，`derive(Eq, Debug)` 并提供中文可读 `to_string`；密钥/IV 长度、密文长度、PKCS7 填充合法性全部显式校验。
 - **安全边界声明**：SM3 消息长度计数为 32 位字节计数，超过约 512 MiB 的消息长度域会失真（wasm-gc 场景下不构成实际限制）；本库面向协议互联与教学研究，未做侧信道防护，不建议直接用于生产密钥材料场景。
 
