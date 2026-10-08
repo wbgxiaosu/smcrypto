@@ -3,7 +3,7 @@
 
 name = "wbgxiaosu/smcrypto"
 
-version = "0.1.0"
+version = "0.2.0"
 
 readme = "README.mbt.md"
 
@@ -17,7 +17,8 @@ keywords = [
   "chinese-national-cryptography",
   "hash",
   "cipher",
-  "rules-engine",
+  "hmac",
+  "kdf",
 ]
 
 preferred_target = "wasm-gc"

@@ -34,7 +34,17 @@ let back = @smcrypto.sm4_decrypt_cbc(key, iv, ct).unwrap()
 assert_eq(back, pt)
 ```
 
-另有 ECB 模式（`sm4_encrypt_ecb` / `sm4_decrypt_ecb`，PKCS7 填充）与单块操作（`Sm4::new` + `encrypt_block` / `decrypt_block`）。
+另有 ECB 模式（`sm4_encrypt_ecb` / `sm4_decrypt_ecb`，PKCS7 填充）、CTR 计数器模式（`sm4_encrypt_ctr` / `sm4_decrypt_ctr`，无填充输出等长）与单块操作（`Sm4::new` + `encrypt_block` / `decrypt_block`）。
+
+## HMAC-SM3 与 SM3-KDF
+
+```moonbit nocheck
+// 消息认证码（RFC 2104 结构）
+let mac : Bytes = @smcrypto.sm3_hmac(key, message)
+
+// 密钥派生（GB/T 32918.3-2016 5.4.2，SM2/SM9 使用）
+let derived : Bytes = @smcrypto.sm3_kdf(shared_secret, 32)
+```
 
 ## 验证
 
@@ -44,7 +54,7 @@ assert_eq(back, pt)
 
 ```bash
 moon check   # 零警告
-moon test    # 14 组测试
+moon test    # 25 组测试
 moon run cmd/main   # 可复现演示
 ```
 
