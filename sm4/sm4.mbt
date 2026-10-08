@@ -37,33 +37,21 @@ pub fn Sm4Error::to_string(self : Sm4Error) -> String {
 }
 
 ///|
-/// 32 位循环左移。
-fn rotl32(x : UInt, n : Int) -> UInt {
-  (x << n) | (x >> (32 - n))
-}
-
-///|
-/// 字节替换 tau：对 32 位字的每个字节查 S 盒。
-fn tau(x : UInt) -> UInt {
-  let b0 = sm4_sbox[((x >> 24) & 0xffU).reinterpret_as_int()].to_int()
-  let b1 = sm4_sbox[((x >> 16) & 0xffU).reinterpret_as_int()].to_int()
-  let b2 = sm4_sbox[((x >> 8) & 0xffU).reinterpret_as_int()].to_int()
-  let b3 = sm4_sbox[(x & 0xffU).reinterpret_as_int()].to_int()
-  ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3).reinterpret_as_uint()
-}
-
-///|
-/// 加密轮函数合成变换 T：tau 后接线性变换 L。
+/// 加密轮合成变换 T：按字节查合成表（S 盒替换 + 线性变换 L 已合并）。
 fn t_round(x : UInt) -> UInt {
-  let b = tau(x)
-  b ^ rotl32(b, 2) ^ rotl32(b, 10) ^ rotl32(b, 18) ^ rotl32(b, 24)
+  sm4_te0[((x >> 24) & 0xffU).reinterpret_as_int()] ^
+  sm4_te3[((x >> 16) & 0xffU).reinterpret_as_int()] ^
+  sm4_te2[((x >> 8) & 0xffU).reinterpret_as_int()] ^
+  sm4_te1[(x & 0xffU).reinterpret_as_int()]
 }
 
 ///|
-/// 密钥扩展合成变换 T'：tau 后接线性变换 L'。
+/// 密钥扩展合成变换 T'：按字节查合成表（S 盒替换 + 线性变换 L' 已合并）。
 fn t_key(x : UInt) -> UInt {
-  let b = tau(x)
-  b ^ rotl32(b, 13) ^ rotl32(b, 23)
+  sm4_td0[((x >> 24) & 0xffU).reinterpret_as_int()] ^
+  sm4_td3[((x >> 16) & 0xffU).reinterpret_as_int()] ^
+  sm4_td2[((x >> 8) & 0xffU).reinterpret_as_int()] ^
+  sm4_td1[(x & 0xffU).reinterpret_as_int()]
 }
 
 ///|
