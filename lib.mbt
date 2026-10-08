@@ -56,3 +56,35 @@ pub fn sm4_decrypt_cbc(
 ) -> Result[Bytes, @sm4.Sm4Error] {
   @sm4.decrypt_cbc(key, iv, ciphertext)
 }
+
+///|
+/// 计算 HMAC-SM3 消息认证码（RFC 2104 结构）。
+pub fn sm3_hmac(key : Bytes, message : Bytes) -> Bytes {
+  @sm3.hmac(key, message)
+}
+
+///|
+/// SM3 密钥派生函数 KDF（GB/T 32918.3-2016 5.4.2）。
+pub fn sm3_kdf(z : Bytes, klen : Int) -> Bytes {
+  @sm3.kdf(z, klen)
+}
+
+///|
+/// SM4 CTR 模式加密（无填充，输出与明文等长）。
+pub fn sm4_encrypt_ctr(
+  key : Bytes,
+  counter : Bytes,
+  plaintext : Bytes,
+) -> Result[Bytes, @sm4.Sm4Error] {
+  @sm4.encrypt_ctr(key, counter, plaintext)
+}
+
+///|
+/// SM4 CTR 模式解密（与加密同一变换）。
+pub fn sm4_decrypt_ctr(
+  key : Bytes,
+  counter : Bytes,
+  ciphertext : Bytes,
+) -> Result[Bytes, @sm4.Sm4Error] {
+  @sm4.decrypt_ctr(key, counter, ciphertext)
+}
