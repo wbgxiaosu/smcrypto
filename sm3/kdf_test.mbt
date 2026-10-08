@@ -5,7 +5,9 @@
 test "sm3-kdf cross-checked vectors" {
   // Z = 00..0f, klen = 32（单块恰好取满）
   assert_eq(
-    @hexutil.encode(@sm3.kdf(sm3_hex_bytes("000102030405060708090a0b0c0d0e0f"), 32)),
+    @hexutil.encode(
+      @sm3.kdf(sm3_hex_bytes("000102030405060708090a0b0c0d0e0f"), 32),
+    ),
     "36f913884de844fce7bc7958fc2a3dd004f6992a3dd76a7fc2e287f2bd58a8dd",
     msg="kdf 32-byte vector",
   )

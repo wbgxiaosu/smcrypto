@@ -20,12 +20,20 @@ test "sm4-ctr cross-checked vectors" {
   let ctr1 = sm4_hex_bytes("00000000000000000000000000000001")
   // 43 字节明文（2 个整块 + 11 字节尾块）
   assert_eq(
-    ctr_bytes_hex(@sm4.encrypt_ctr(key, ctr1, b"The quick brown fox jumps over the lazy dog").unwrap()),
+    ctr_bytes_hex(
+      @sm4.encrypt_ctr(
+        key, ctr1, b"The quick brown fox jumps over the lazy dog",
+      ).unwrap(),
+    ),
     "1a313ed04e56d47359bbcd24f79ff6ccd57c142424e0255d3c45411f2a5561b9c9403239ea749e72ff92c0",
     msg="ctr fox vector",
   )
   // 空明文输出空
-  assert_eq(@sm4.encrypt_ctr(key, ctr1, b"").unwrap().length(), 0, msg="ctr empty")
+  assert_eq(
+    @sm4.encrypt_ctr(key, ctr1, b"").unwrap().length(),
+    0,
+    msg="ctr empty",
+  )
   // 计数器全 1 进位回绕（ffffffff... + 2 块进位），33 字节明文 0x41
   let ctr_max = sm4_hex_bytes("ffffffffffffffffffffffffffffffff")
   let rollover = @sm4.encrypt_ctr(
@@ -55,7 +63,11 @@ test "sm4-ctr roundtrip and error cases" {
   assert_eq(ct.length(), 37, msg="ctr keeps length")
   // 解密还原
   let back = @sm4.decrypt_ctr(key, ctr, ct).unwrap()
-  assert_eq(ctr_bytes_hex(back), ctr_bytes_hex(Bytes::from_array(pt)), msg="roundtrip")
+  assert_eq(
+    ctr_bytes_hex(back),
+    ctr_bytes_hex(Bytes::from_array(pt)),
+    msg="roundtrip",
+  )
   // 计数器长度错误
   assert_eq(
     @sm4.encrypt_ctr(key, sm4_hex_bytes("0001"), b"x") is Err(_),

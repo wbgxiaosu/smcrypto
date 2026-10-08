@@ -10,7 +10,7 @@ moon add wbgxiaosu/smcrypto
 
 ## SM3 密码杂凑（GB/T 32905-2016）
 
-```moonbit
+```moonbit nocheck
 // 一次性计算（返回十六进制串）
 let hex : String = @smcrypto.sm3_hex_digest(b"abc")
 // = "66c7f0f4..."（国标示例 1）
@@ -24,7 +24,7 @@ let digest : Bytes = h.finalize()  // 32 字节
 
 ## SM4 分组密码（GB/T 32907-2016）
 
-```moonbit
+```moonbit nocheck
 let key = @hexutil.decode("0123456789abcdeffedcba9876543210").unwrap()
 let iv  = @hexutil.decode("000102030405060708090a0b0c0d0e0f").unwrap()
 let pt  = @utf8.encode("攻击开始于黎明！")

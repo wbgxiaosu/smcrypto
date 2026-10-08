@@ -41,7 +41,11 @@ pub fn encrypt_ctr(
   let mut off = 0
   while off < plaintext.length() {
     let ks = c.encrypt_block(Bytes::from_array(ctrbuf))
-    let n = if plaintext.length() - off < 16 { plaintext.length() - off } else { 16 }
+    let n = if plaintext.length() - off < 16 {
+      plaintext.length() - off
+    } else {
+      16
+    }
     for i in 0..<n {
       out[off + i] = (plaintext[off + i].to_int() ^ ks[i].to_int()).to_byte()
     }

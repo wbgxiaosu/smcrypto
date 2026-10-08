@@ -528,6 +528,7 @@ let sm4_te1 : FixedArray[UInt] = {
   a
 }
 
+///|
 let sm4_te2 : FixedArray[UInt] = {
   let a : FixedArray[UInt] = FixedArray::make(256, 0U)
   a[0] = 0x5b5b8ed5U
@@ -789,6 +790,7 @@ let sm4_te2 : FixedArray[UInt] = {
   a
 }
 
+///|
 let sm4_te3 : FixedArray[UInt] = {
   let a : FixedArray[UInt] = FixedArray::make(256, 0U)
   a[0] = 0x5b8ed55bU
@@ -1575,6 +1577,8 @@ let sm4_td1 : FixedArray[UInt] = {
   a[255] = 0x24090048U
   a
 }
+
+///|
 let sm4_td2 : FixedArray[UInt] = {
   let a : FixedArray[UInt] = FixedArray::make(256, 0U)
   a[0] = 0x1ac0d66bU
@@ -1835,6 +1839,8 @@ let sm4_td2 : FixedArray[UInt] = {
   a[255] = 0x09004824U
   a
 }
+
+///|
 let sm4_td3 : FixedArray[UInt] = {
   let a : FixedArray[UInt] = FixedArray::make(256, 0U)
   a[0] = 0xc0d66b1aU

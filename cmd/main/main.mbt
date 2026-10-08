@@ -37,6 +37,25 @@ fn main {
   println("国标单块向量    = \{@hexutil.encode(std_ct)}")
   println("国标期望        = 681edf34d206965e86b3e94f536e4246")
   println("")
+  println("=== HMAC-SM3 消息认证 ===")
+  let mac = @smcrypto.sm3_hmac(key, pt)
+  println("HMAC-SM3        = \{@hexutil.encode(mac)}")
+  // 篡改一个字节后校验失败
+  let tampered : FixedArray[Byte] = FixedArray::make(pt.length(), b'\x00')
+  for i in 0..<pt.length() {
+    tampered[i] = pt[i]
+  }
+  tampered[0] = (tampered[0].to_int() ^ 0x01).to_byte()
+  let mac2 = @smcrypto.sm3_hmac(key, Bytes::from_array(tampered))
+  println("篡改后校验通过  = \{mac == mac2}")
+  println("")
+  println("=== SM3-KDF 密钥派生 (GB/T 32918.3-2016) ===")
+  let shared = @hexutil.decode("000102030405060708090a0b0c0d0e0f").unwrap()
+  println("KDF(Z, 32)      = \{@hexutil.encode(@smcrypto.sm3_kdf(shared, 32))}")
+  println(
+    "KDF(Z, 32) 期望 = 36f913884de844fce7bc7958fc2a3dd004f6992a3dd76a7fc2e287f2bd58a8dd",
+  )
+  println("")
   println("=== 错误处理 ===")
   let bad_key = @hexutil.decode("000102030405060708090a0b0c0d0e").unwrap()
   match @smcrypto.sm4_new(bad_key) {

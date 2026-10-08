@@ -5,7 +5,9 @@
 test "hmac-sm3 cross-checked vectors" {
   // key="key", msg="The quick brown fox jumps over the lazy dog"
   assert_eq(
-    @hexutil.encode(@sm3.hmac(b"key", b"The quick brown fox jumps over the lazy dog")),
+    @hexutil.encode(
+      @sm3.hmac(b"key", b"The quick brown fox jumps over the lazy dog"),
+    ),
     "bd4a34077888162b210645b8ebf74b9af357303789357a27c7fc457244ebd398",
     msg="hmac fox vector",
   )
@@ -43,7 +45,11 @@ test "hmac-sm3 determinism and key sensitivity" {
   let m2 = @sm3.hmac(key, msg)
   assert_eq(@hexutil.encode(m1), @hexutil.encode(m2), msg="deterministic")
   let m3 = @sm3.hmac(b"secret-kex", msg)
-  assert_eq(@hexutil.encode(m1) == @hexutil.encode(m3), false, msg="key sensitive")
+  assert_eq(
+    @hexutil.encode(m1) == @hexutil.encode(m3),
+    false,
+    msg="key sensitive",
+  )
   // 输出长度恒为 32 字节
   assert_eq(m1.length(), 32, msg="mac length")
 }
