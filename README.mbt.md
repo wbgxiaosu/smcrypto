@@ -52,6 +52,12 @@ let derived : Bytes = @smcrypto.sm3_kdf(shared_secret, 32)
 - 与 Python `gmssl` 交叉对拍：51 条 SM3 向量、24 组 SM4 向量
 - `wasm-gc` / `js` / `native` 三后端测试一致
 
+### 测试向量来源与复现
+
+1. `gen/vectors.json`：以 Python `gmssl` 库为基准生成（该库实现先通过 GB/T 32905-2016 / 32907-2016 国标标准向量校验，生成脚本见仓库 `gen/gen_*.py`）。
+2. `sm3/sm3_vectors_test.mbt`、`sm4/sm4_vectors_test.mbt`：由 `gen/gen_sm3_tests.py`、`gen/gen_sm4_tests.py` 自动生成的 MoonBit 测试，文件头部注明来源。
+3. 三种输入方式交叉验证：一次性计算、随机分片流式输入、逐字节流式输入，结果一致。
+
 ```bash
 moon check   # 零警告
 moon test    # 25 组测试
