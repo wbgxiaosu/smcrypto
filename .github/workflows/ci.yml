@@ -16,6 +16,9 @@ jobs:
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
+      - name: Install dependencies
+        run: moon install
+
       - name: moon check (wasm-gc)
         run: moon check
 
@@ -34,6 +37,9 @@ jobs:
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: moon install
 
       - name: moon check (js)
         run: moon check --target js
