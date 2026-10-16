@@ -8,12 +8,20 @@ test "hex roundtrip for all byte values" {
     all[i] = i.to_byte()
   }
   let data = Bytes::from_array(all)
-  assert_eq(@hexutil.decode(@hexutil.encode(data)).unwrap(), data, msg="full-range roundtrip")
+  assert_eq(
+    @hexutil.decode(@hexutil.encode(data)).unwrap(),
+    data,
+    msg="full-range roundtrip",
+  )
 }
 
 ///|
 test "hex encode output format" {
-  assert_eq(@hexutil.encode(Bytes::from_array(FixedArray::make(0, b'\x00'))), "", msg="empty input")
+  assert_eq(
+    @hexutil.encode(Bytes::from_array(FixedArray::make(0, b'\x00'))),
+    "",
+    msg="empty input",
+  )
   assert_eq(@hexutil.encode(b"\x00\xff\x10"), "00ff10", msg="mixed bytes")
   // 输出恒为小写
   assert_eq(@hexutil.encode(b"\xab\xcd\xef"), "abcdef", msg="lowercase output")
@@ -22,7 +30,11 @@ test "hex encode output format" {
 ///|
 test "hex decode error positions" {
   // 奇数长度
-  assert_eq(@hexutil.decode("abc") is Err(InvalidLength), true, msg="odd length rejected")
+  assert_eq(
+    @hexutil.decode("abc") is Err(InvalidLength),
+    true,
+    msg="odd length rejected",
+  )
   // 非法字符：定位到具体位置
   assert_eq(
     @hexutil.decode("00zz") is Err(InvalidCharacter(2)),

@@ -56,6 +56,38 @@ fn main {
     "KDF(Z, 32) 期望 = 36f913884de844fce7bc7958fc2a3dd004f6992a3dd76a7fc2e287f2bd58a8dd",
   )
   println("")
+  println("=== SM4-GCM 认证加密 (NIST SP 800-38D) ===")
+  let gcm_iv = @hexutil.decode("00001234567800000000ABCD").unwrap()
+  let gcm_aad = @hexutil.decode("FEEDFACEDEADBEEFFEEDFACEDEADBEEFABADDAD2").unwrap()
+  let (ct_gcm, tag) = @smcrypto.sm4_encrypt_gcm(key, gcm_iv, pt, gcm_aad).unwrap()
+  println("GCM 密文        = \{@hexutil.encode(ct_gcm)}")
+  println("GCM 标签        = \{@hexutil.encode(tag)}")
+  match @smcrypto.sm4_decrypt_gcm(key, gcm_iv, ct_gcm, tag, gcm_aad) {
+    Ok(back_gcm) => println("GCM 解密还原正确 = \{back_gcm == pt}")
+    Err(e) => println("GCM 解密失败: \{e.to_string()}")
+  }
+  // RFC 8998 A.1 官方向量对拍（固定明文）
+  let rfc_pt = @hexutil.decode(
+    "aaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbccccccccccccccccdddddddddddddddd" +
+    "eeeeeeeeeeeeeeeeffffffffffffffffeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaa",
+  ).unwrap()
+  let (rfc_ct, rfc_tag) = @smcrypto.sm4_encrypt_gcm(
+    key, gcm_iv, rfc_pt, gcm_aad,
+  ).unwrap()
+  println("RFC 8998 密文   = \{@hexutil.encode(rfc_ct)}")
+  println(
+    "RFC 8998 期望   = 17f399f08c67d5ee19d0dc9969c4bb7d5fd46fd3756489069157b282bb200735d82710ca5c22f0ccfa7cbf93d496ac15a56834cbcf98c397b4024a2691233b8d",
+  )
+  println("RFC 8998 标签   = \{@hexutil.encode(rfc_tag)}")
+  println("RFC 8998 期望   = 83de3541e4c2b58177e065a9bf7b62ec")
+  println("")
+  println("=== PBKDF2-HMAC-SM3 口令派生 (RFC 8018) ===")
+  let dk = @smcrypto.sm3_pbkdf2(b"password", b"salt", 4096, 32)
+  println("PBKDF2(4096,32) = \{@hexutil.encode(dk)}")
+  println(
+    "对拍期望        = b6e8f2074c87432b78f62e5ced980fdff89e86af2f693dab1638e2b3683045dd",
+  )
+  println("")
   println("=== 错误处理 ===")
   let bad_key = @hexutil.decode("000102030405060708090a0b0c0d0e").unwrap()
   match @smcrypto.sm4_new(bad_key) {

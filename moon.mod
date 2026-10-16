@@ -3,7 +3,7 @@
 
 name = "wbgxiaosu/smcrypto"
 
-version = "0.2.0"
+version = "0.3.0"
 
 readme = "README.mbt.md"
 
@@ -19,8 +19,11 @@ keywords = [
   "cipher",
   "hmac",
   "kdf",
+  "gcm",
+  "aead",
+  "pbkdf2",
 ]
 
 preferred_target = "wasm-gc"
 
-description = "国密算法库：SM3 密码杂凑（GB/T 32905-2016）与 SM4 分组密码（GB/T 32907-2016），纯 MoonBit 实现、零依赖、国标向量对拍 / Pure-MoonBit Chinese national cryptography: SM3 hash and SM4 block cipher with standard test vectors"
+description = "国密算法库：SM3 密码杂凑（GB/T 32905-2016）与 SM4 分组密码（GB/T 32907-2016），含 ECB/CBC/CTR/GCM、HMAC-SM3、SM3-KDF、PBKDF2-HMAC-SM3，纯 MoonBit 零依赖、国标向量与 RFC 8998 对拍 / Pure-MoonBit Chinese national cryptography: SM3 hash and SM4 block cipher with ECB/CBC/CTR/GCM, HMAC, KDF and PBKDF2, zero-dependency, RFC 8998 cross-validated"

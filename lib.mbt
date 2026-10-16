@@ -88,3 +88,38 @@ pub fn sm4_decrypt_ctr(
 ) -> Result[Bytes, @sm4.Sm4Error] {
   @sm4.decrypt_ctr(key, counter, ciphertext)
 }
+
+///|
+/// SM4 GCM 认证加密（SP 800-38D，16 字节认证标签）。
+/// 返回 `(密文, 标签)`，密文与明文等长。
+pub fn sm4_encrypt_gcm(
+  key : Bytes,
+  iv : Bytes,
+  plaintext : Bytes,
+  aad : Bytes,
+) -> Result[(Bytes, Bytes), @sm4.Sm4Error] {
+  @sm4.encrypt_gcm(key, iv, plaintext, aad)
+}
+
+///|
+/// SM4 GCM 认证解密：先校验标签，不匹配返回认证失败错误。
+pub fn sm4_decrypt_gcm(
+  key : Bytes,
+  iv : Bytes,
+  ciphertext : Bytes,
+  tag : Bytes,
+  aad : Bytes,
+) -> Result[Bytes, @sm4.Sm4Error] {
+  @sm4.decrypt_gcm(key, iv, ciphertext, tag, aad)
+}
+
+///|
+/// PBKDF2-HMAC-SM3 口令基密钥派生（RFC 8018）。
+pub fn sm3_pbkdf2(
+  password : Bytes,
+  salt : Bytes,
+  iterations : Int,
+  dklen : Int,
+) -> Bytes {
+  @sm3.pbkdf2(password, salt, iterations, dklen)
+}

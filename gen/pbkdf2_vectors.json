@@ -1,0 +1,51 @@
+[
+ {
+  "password_hex": "70617373776f7264",
+  "salt_hex": "73616c74",
+  "iterations": 1,
+  "dklen": 32,
+  "dk_hex": "4612f922a1fdcefaf4312fc6f8f3322b489cbf24f2ea361b44c2bd8fa2c6dcb0"
+ },
+ {
+  "password_hex": "70617373776f7264",
+  "salt_hex": "73616c74",
+  "iterations": 2,
+  "dklen": 32,
+  "dk_hex": "fee723a2bc966e11dffb66133f4e8df577383c78ade30e3298edbd3e54ed85b7"
+ },
+ {
+  "password_hex": "70617373776f7264",
+  "salt_hex": "73616c74",
+  "iterations": 4096,
+  "dklen": 32,
+  "dk_hex": "b6e8f2074c87432b78f62e5ced980fdff89e86af2f693dab1638e2b3683045dd"
+ },
+ {
+  "password_hex": "70617373776f7264",
+  "salt_hex": "73616c74",
+  "iterations": 4096,
+  "dklen": 64,
+  "dk_hex": "b6e8f2074c87432b78f62e5ced980fdff89e86af2f693dab1638e2b3683045dd844438500eead50cb3e11a74db6bb2df4cc402ec6986ad3a46163e3b9647fea4"
+ },
+ {
+  "password_hex": "50617373776f7264536563726574",
+  "salt_hex": "4e61436c2d70726f6a65637420536f6469756d43686c6f72696465",
+  "iterations": 80000,
+  "dklen": 32,
+  "dk_hex": "f91fbfb56e7de3e910cc9f12ae13745e1e8c8c53f4c7d0bebc0e890565223063"
+ },
+ {
+  "password_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "salt_hex": "010203",
+  "iterations": 1000,
+  "dklen": 48,
+  "dk_hex": "233519cdc5babc1f7a79309ccd6b6b80b185386728e227c1c91a52d3099c5a134ac0277cba68a43e0e1675902442a2c7"
+ },
+ {
+  "password_hex": "",
+  "salt_hex": "",
+  "iterations": 1,
+  "dklen": 32,
+  "dk_hex": "311c191a8c3676b7b0e5ab0b9e1a7b66da1eb58f798d2ccb08de8ab50385e96c"
+ }
+]

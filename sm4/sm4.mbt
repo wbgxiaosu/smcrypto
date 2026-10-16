@@ -14,6 +14,8 @@ pub(all) enum Sm4Error {
   InvalidCiphertextLength(Int)
   /// 密文 PKCS7 填充不合法
   InvalidPadding
+  /// GCM 认证标签校验失败（密文、标签或 AAD 被篡改）
+  AuthenticationFailed
 } derive(Eq, Debug)
 
 ///|
@@ -33,6 +35,7 @@ pub fn Sm4Error::to_string(self : Sm4Error) -> String {
     InvalidCiphertextLength(n) =>
       "sm4: 密文长度必须为 16 的整数倍，实际 \{n} 字节"
     InvalidPadding => "sm4: PKCS7 填充不合法"
+    AuthenticationFailed => "sm4: GCM 认证标签校验失败"
   }
 }
 

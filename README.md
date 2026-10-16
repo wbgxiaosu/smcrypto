@@ -1,19 +1,23 @@
 # wbgxiaosu/smcrypto
 
-**MoonBit 国密算法库：SM3 密码杂凑 + SM4 分组密码，纯 MoonBit 实现，零依赖。**
+**MoonBit 国密算法库：SM3 密码杂凑 + SM4 分组密码（ECB/CBC/CTR/GCM）+ HMAC + KDF + PBKDF2，纯 MoonBit 实现，零依赖。**
 
-Chinese national cryptography (GM/T 国密) for MoonBit: SM3 hash and SM4 block cipher. Pure MoonBit, zero dependencies.
+Chinese national cryptography (GM/T 国密) for MoonBit: SM3 hash and SM4 block cipher with authenticated encryption. Pure MoonBit, zero dependencies.
 
 ## 算法与标准
 
 | 算法 | 标准 | 说明 |
 |------|------|------|
 | SM3 | GB/T 32905-2016 | 256 位密码杂凑（哈希）算法，流式 API 支持 |
-| SM4 | GB/T 32907-2016 | 128 位分组密码，ECB / CBC / CTR 工作模式，PKCS7 填充 |
+| SM4 | GB/T 32907-2016 | 128 位分组密码，ECB / CBC / CTR / GCM 工作模式，PKCS7 填充 |
+| SM4-GCM | NIST SP 800-38D | 认证加密，16 字节标签，以 RFC 8998 官方向量对拍 |
 | HMAC-SM3 | RFC 2104 结构 | 基于 SM3 的消息认证码 |
 | SM3-KDF | GB/T 32918.3-2016 5.4.2 | SM2/SM9 密钥派生函数 |
+| PBKDF2-HMAC-SM3 | RFC 8018 | 口令基密钥派生 |
 
-所有实现均已通过**国标附录标准测试向量**验证，并与独立的 Python `gmssl` 实现做了 51 条 SM3 向量、24 组 SM4 向量的**交叉对拍**（含 UTF-8 中文消息、填充边界长度 55/56/57/63/64/65 字节、随机分片流式输入）。
+所有实现均已通过**国标附录标准测试向量**验证，并与独立的 Python `gmssl` 实现做了 51 条 SM3 向量、24 组 SM4 向量的**交叉对拍**（含 UTF-8 中文消息、填充边界长度 55/56/57/63/64/65 字节、随机分片流式输入）；SM4-GCM 通过 **IETF RFC 8998 附录 A.1 官方向量**对拍；PBKDF2-HMAC-SM3 与 Python 基准实现交叉对拍。
+
+> 与生态的关系：mooncakes 上已有 `2d5rrr333/toolsfx-moonbit`（ToolsFx 移植，含 SM2/SM3/SM4 等大而全的工具箱）。本项目为**按国标文本独立编写的原创实现**（非移植、非 fork、未复用其代码），定位为聚焦 SM3/SM4 的轻量底座：零依赖、SM4 轮函数合成 T 表优化、流式 API、RFC 8998 对拍，并在 v0.3.0 补齐 GCM 与 PBKDF2-HMAC-SM3。两者可并存选用。
 
 ## 快速开始
 
@@ -52,6 +56,22 @@ let c = @smcrypto.sm4_new(key).unwrap()
 let ct1 : Bytes = c.encrypt_block(std_block)
 ```
 
+### SM4-GCM 认证加密
+
+```moonbit
+let iv  = @hexutil.decode("00001234567800000000ABCD").unwrap()
+let aad = @utf8.encode("header:v1")
+let (ct, tag) = @smcrypto.sm4_encrypt_gcm(key, iv, pt, aad).unwrap()
+// 解密：标签不符返回 Err(AuthenticationFailed)
+let back = @smcrypto.sm4_decrypt_gcm(key, iv, ct, tag, aad).unwrap()
+```
+
+### PBKDF2-HMAC-SM3 口令派生
+
+```moonbit
+let dk : Bytes = @smcrypto.sm3_pbkdf2(b"password", b"salt", 4096, 32)
+```
+
 ## API 一览
 
 ### 根包 `@smcrypto`（便捷再导出）
@@ -64,13 +84,16 @@ let ct1 : Bytes = c.encrypt_block(std_block)
 | `sm4_encrypt_ecb(key, pt) / sm4_decrypt_ecb(key, ct)` | ECB 模式（PKCS7） |
 | `sm4_encrypt_cbc(key, iv, pt) / sm4_decrypt_cbc(key, iv, ct)` | CBC 模式（PKCS7） |
 | `sm4_encrypt_ctr(key, ctr, pt) / sm4_decrypt_ctr(key, ctr, ct)` | CTR 模式（无填充，输出等长） |
+| `sm4_encrypt_gcm(key, iv, pt, aad) -> (ct, tag)` | GCM 认证加密（16 字节标签） |
+| `sm4_decrypt_gcm(key, iv, ct, tag, aad)` | GCM 认证解密（标签不符报 `AuthenticationFailed`） |
 | `sm3_hmac(key, message) -> Bytes` | HMAC-SM3 消息认证码 |
 | `sm3_kdf(z : Bytes, klen : Int) -> Bytes` | SM3 密钥派生函数 |
+| `sm3_pbkdf2(password, salt, iterations, dklen) -> Bytes` | PBKDF2-HMAC-SM3 口令派生 |
 
 ### 子包
 
-- `sm3/`：`Sm3::new / update / finalize / reset`、`digest`、`hex_digest`、`hmac`、`kdf`
-- `sm4/`：`Sm4::new / encrypt_block / decrypt_block`、`encrypt_ecb / decrypt_ecb / encrypt_cbc / decrypt_cbc / encrypt_ctr / decrypt_ctr`、`Sm4Error`
+- `sm3/`：`Sm3::new / update / finalize / reset`、`digest`、`hex_digest`、`hmac`、`kdf`、`pbkdf2`
+- `sm4/`：`Sm4::new / encrypt_block / decrypt_block`、`encrypt_ecb / decrypt_ecb / encrypt_cbc / decrypt_cbc / encrypt_ctr / decrypt_ctr / encrypt_gcm / decrypt_gcm`、`Sm4Error`
 - `hexutil/`：十六进制 `encode / decode`（供密钥、IV 与结果的可读化处理）
 
 ## 可复现验证
@@ -79,22 +102,28 @@ let ct1 : Bytes = c.encrypt_block(std_block)
 git clone https://github.com/wbgxiaosu/smcrypto
 cd smcrypto
 moon check   # 零警告
-moon test    # 25 组测试 / 51+24 条国标与交叉验证向量
-moon run cmd/main   # 演示：国标向量对拍 + 中英文加解密 roundtrip
+moon test    # 30 组测试 / 国标向量 + 51 条 SM3、24 组 SM4 交叉对拍 + RFC 8998 官方向量
+moon run cmd/main   # 演示：国标向量对拍 + RFC 8998 GCM 对拍 + PBKDF2
 ```
 
-演示输出末尾为 SM4 国标单块向量对拍：
+演示输出末尾为 SM4 国标单块向量与 RFC 8998 GCM 官方向量对拍：
 
 ```
 国标单块向量    = 681edf34d206965e86b3e94f536e4246
 国标期望        = 681edf34d206965e86b3e94f536e4246
+RFC 8998 密文   = 17f399f08c67d5ee19d0dc9969c4bb7d…a56834cbcf98c397b4024a2691233b8d
+RFC 8998 期望   = 17f399f08c67d5ee19d0dc9969c4bb7d…a56834cbcf98c397b4024a2691233b8d
+RFC 8998 标签   = 83de3541e4c2b58177e065a9bf7b62ec
+RFC 8998 期望   = 83de3541e4c2b58177e065a9bf7b62ec
 ```
 
 ### 测试向量来源与复现
 
 1. `gen/vectors.json`：以 Python `gmssl` 库为基准生成（该库实现先通过 GB/T 32905-2016 / 32907-2016 国标标准向量校验，见 `gen/gen_*.py`）。
 2. `sm3/sm3_vectors_test.mbt`、`sm4/sm4_vectors_test.mbt`：由 `gen/gen_sm3_tests.py`、`gen/gen_sm4_tests.py` 自动生成的 MoonBit 测试。
-3. 三种输入方式交叉验证：一次性计算、随机分片流式输入、逐字节流式输入，结果一致。
+3. SM4-GCM：直接采用 **IETF RFC 8998 附录 A.1 官方测试向量**（SM4-GCM for TLS 1.3），密文与认证标签逐字节对拍，另含篡改检测用例。
+4. PBKDF2-HMAC-SM3：以 Python `gmssl` SM3 + 手写 RFC 2104/8018 结构的独立基准实现生成（`gen/pbkdf2_vectors.json`），覆盖迭代 1/2/1000/4096/80000、跨派生块、长密钥预哈希、截断输出等场景。
+5. 三种输入方式交叉验证：一次性计算、随机分片流式输入、逐字节流式输入，结果一致。
 
 ## 设计说明
 
