@@ -3,6 +3,13 @@
 
 ///|
 fn main {
+  println(
+    "smcrypto v0.4.0 —— 基于 2d5rrr333/toolsfx-moonbit 的国密工程化扩展",
+  )
+  println(
+    "核心 SM3/SM4 原语委托上游，本项目提供 RFC 8998 合规 GCM、CTR、HMAC 与 PBKDF2",
+  )
+  println("")
   println("=== SM3 密码杂凑 (GB/T 32905-2016) ===")
   let abc : Bytes = b"abc"
   println("SM3(\"abc\")      = \{@smcrypto.sm3_hex_digest(abc)}")

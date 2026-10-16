@@ -3,7 +3,7 @@
 
 name = "wbgxiaosu/smcrypto"
 
-version = "0.3.0"
+version = "0.4.0"
 
 readme = "README.mbt.md"
 
@@ -22,8 +22,13 @@ keywords = [
   "gcm",
   "aead",
   "pbkdf2",
+  "toolsfx",
 ]
 
 preferred_target = "wasm-gc"
 
-description = "国密算法库：SM3 密码杂凑（GB/T 32905-2016）与 SM4 分组密码（GB/T 32907-2016），含 ECB/CBC/CTR/GCM、HMAC-SM3、SM3-KDF、PBKDF2-HMAC-SM3，纯 MoonBit 零依赖、国标向量与 RFC 8998 对拍 / Pure-MoonBit Chinese national cryptography: SM3 hash and SM4 block cipher with ECB/CBC/CTR/GCM, HMAC, KDF and PBKDF2, zero-dependency, RFC 8998 cross-validated"
+description = "基于 2d5rrr333/toolsfx-moonbit 的国密工程化扩展：RFC 8998 符合的 SM4-GCM 认证加密、SM4 CTR、HMAC-SM3（RFC 2104）、PBKDF2-HMAC-SM3（RFC 8018），核心 SM3/SM4/SM2 原语委托 toolsfx-moonbit / Engineering-grade GM extension for toolsfx-moonbit: RFC 8998-conformant SM4-GCM, CTR, HMAC-SM3 and PBKDF2-HMAC-SM3"
+
+import {
+  "2d5rrr333/toolsfx-moonbit@0.3.0",
+}
