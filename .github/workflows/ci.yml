@@ -17,7 +17,9 @@ jobs:
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
-        run: moon install
+        run: |
+          moon update
+          moon install
 
       - name: moon check (wasm-gc)
         run: moon check
@@ -39,7 +41,9 @@ jobs:
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
-        run: moon install
+        run: |
+          moon update
+          moon install
 
       - name: moon check (js)
         run: moon check --target js
